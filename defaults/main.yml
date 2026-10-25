@@ -1,0 +1,11 @@
+---
+motd_banner_state: present
+motd_banner_src: banner.txt
+
+# Debian/Ubuntu
+motd_banner_debian_dest: /etc/update-motd.d/00-0header
+motd_banner_debian_mode: '0755'
+
+# RHEL/CentOS 8+
+motd_banner_redhat_dest: /etc/motd.d/00-0header
+motd_banner_redhat_mode: '0644'

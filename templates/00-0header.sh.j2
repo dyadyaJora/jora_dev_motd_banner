@@ -1,0 +1,5 @@
+#!/bin/sh
+# {{ ansible_managed }}
+# Banner text comes from files/{{ motd_banner_src }}; quoted heredoc keeps it verbatim.
+cat << 'MOTD_BANNER_EOF'
+{{ lookup('ansible.builtin.file', motd_banner_src, rstrip=false) }}MOTD_BANNER_EOF

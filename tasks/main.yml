@@ -1,0 +1,50 @@
+---
+- name: Add custom MOTD banner (Debian/Ubuntu, update-motd.d script)
+  ansible.builtin.template:
+    src: 00-0header.sh.j2
+    dest: "{{ motd_banner_debian_dest }}"
+    owner: root
+    group: root
+    mode: "{{ motd_banner_debian_mode }}"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - motd_banner_state == 'present'
+  tags: ['motd', 'banner']
+
+- name: Remove custom MOTD banner (Debian/Ubuntu)
+  ansible.builtin.file:
+    path: "{{ motd_banner_debian_dest }}"
+    state: absent
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - motd_banner_state == 'absent'
+  tags: ['motd', 'banner']
+
+- name: Ensure RHEL/CentOS version is supported
+  ansible.builtin.assert:
+    that: ansible_facts['distribution_major_version'] | int >= 8
+    fail_msg: "motd_banner requires RHEL/CentOS 8+ (/etc/motd.d is not supported on EL{{ ansible_facts['distribution_major_version'] }})"
+    quiet: true
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: ['motd', 'banner']
+
+- name: Add custom MOTD banner (RHEL/CentOS, static file in motd.d)
+  ansible.builtin.copy:
+    src: "{{ motd_banner_src }}"
+    dest: "{{ motd_banner_redhat_dest }}"
+    owner: root
+    group: root
+    mode: "{{ motd_banner_redhat_mode }}"
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - motd_banner_state == 'present'
+  tags: ['motd', 'banner']
+
+- name: Remove custom MOTD banner (RHEL/CentOS)
+  ansible.builtin.file:
+    path: "{{ motd_banner_redhat_dest }}"
+    state: absent
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - motd_banner_state == 'absent'
+  tags: ['motd', 'banner']
